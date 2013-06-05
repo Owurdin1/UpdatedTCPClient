@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="Classes\ConnectClass.cs" />
     <Compile Include="Classes\LogBuilder.cs" />
-    <Compile Include="Classes\ReceiverClass.cs" />
     <Compile Include="Classes\RequestBuilderClass.cs" />
     <Compile Include="Classes\SendReceiveClass.cs" />
     <Compile Include="Classes\StateSaverClass.cs" />
