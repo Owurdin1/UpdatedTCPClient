@@ -81,6 +81,7 @@ namespace tcpClientUpdate.Classes
         {
             byte[] buffer = new byte[BUFFER_SIZE];
             byte[] byteSize = new byte[LENGTH_BITS];
+            int testsize = 0;
 
             try
             {
@@ -102,6 +103,11 @@ namespace tcpClientUpdate.Classes
                     }
 
                     size = BitConverter.ToInt16(byteSize, 0);
+                    
+                    
+                    testsize = size;
+
+
                     offset += LENGTH_BITS;
 
                     bytesRead = stateSaver.sock.Receive(buffer, offset, 
@@ -118,6 +124,8 @@ namespace tcpClientUpdate.Classes
             }
             catch (Exception e)
             {
+                testsize.ToString();
+                buffer.ToString();
                 e.Message.ToString();
             }
         }
