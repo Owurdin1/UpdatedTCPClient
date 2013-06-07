@@ -35,7 +35,7 @@ namespace tcpClientUpdate.Classes
 
                     //string sentStr = System.Text.Encoding.ASCII.GetString(sentMessages[i]);
 
-                    //sw.Write(sentStr + "\n\r");
+                    sw.Write(sentStr + "\n\r");
                     sw.Write(recStr + "\n\r");
                 }
 
@@ -60,7 +60,7 @@ namespace tcpClientUpdate.Classes
 
                     //string sentStr = System.Text.Encoding.ASCII.GetString(sentMessages[i]);
 
-                    //sw.Write(sentStr + "\n\r");
+                    sw.Write(sentStr + "\n\r");
                     sw.Write(recStr + "\n\r");
 
                 }
@@ -83,7 +83,7 @@ namespace tcpClientUpdate.Classes
                             string sentStr = System.Text.Encoding.ASCII.GetString(sentMessages[i]);
                             byte[] choppedRec = new byte[sentMessages[i].Length - 2];
                             Array.Copy(sentMessages[i], 2, choppedRec, 0, choppedRec.Length);
-                            //sw.Write(sentStr + "\n\r");
+                            sw.Write(sentStr + "\n\r");
                         }
                         break;
                 }

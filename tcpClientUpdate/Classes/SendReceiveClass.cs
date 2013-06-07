@@ -25,29 +25,35 @@ namespace tcpClientUpdate.Classes
         internal void Begin(StateSaverClass stateSaver)
         {
             //System.Windows.Forms.MessageBox.Show("Sending and receiving beginning");
+            try
+            {
+                stateSaver.stpWatch.Start();
 
-            stateSaver.stpWatch.Start();
+                Thread receiveThread = new Thread(delegate()
+                    {
+                        ReceivingHandler(stateSaver);
+                    });
 
-            Thread receiveThread = new Thread(delegate()
-                {
-                    ReceivingHandler(stateSaver);
-                });
+                receiveThread.Start();
 
-            receiveThread.Start();
+                Thread sendThread = new Thread(delegate()
+                    {
+                        ConnectionHandler(stateSaver);
+                    });
 
-            Thread sendThread = new Thread(delegate()
-                {
-                    ConnectionHandler(stateSaver);
-                });
+                sendThread.Start();
 
-            sendThread.Start();
-
-            //System.Windows.Forms.MessageBox.Show("Waiting on join");
-            sendThread.Join();
-            receiveThread.Join();
-            stateSaver.sock.Shutdown(System.Net.Sockets.SocketShutdown.Receive);
-            stateSaver.sock.Shutdown(System.Net.Sockets.SocketShutdown.Send);
-            //System.Windows.Forms.MessageBox.Show("Joined threads");
+                //System.Windows.Forms.MessageBox.Show("Waiting on join");
+                sendThread.Join();
+                receiveThread.Join();
+                stateSaver.sock.Shutdown(System.Net.Sockets.SocketShutdown.Receive);
+                stateSaver.sock.Shutdown(System.Net.Sockets.SocketShutdown.Send);
+                //System.Windows.Forms.MessageBox.Show("Joined threads");
+            }
+            catch (Exception e)
+            {
+                e.Message.ToString();
+            }
 
             stateSaver.lb.PrintLogs(stateSaver);
         }
@@ -92,8 +98,11 @@ namespace tcpClientUpdate.Classes
                     int bytesRead = 0;
                     byte[] receivedMsg;
 
-                    bytesRead = stateSaver.sock.Receive(buffer, offset, 
-                        LENGTH_BITS, System.Net.Sockets.SocketFlags.None);
+                    while (bytesRead < 2)
+                    {
+                        bytesRead = stateSaver.sock.Receive(buffer, offset,
+                            LENGTH_BITS, System.Net.Sockets.SocketFlags.None);
+                    }
 
                     Array.Copy(buffer, offset, byteSize, 0, LENGTH_BITS);
 
@@ -110,8 +119,11 @@ namespace tcpClientUpdate.Classes
 
                     offset += LENGTH_BITS;
 
-                    bytesRead = stateSaver.sock.Receive(buffer, offset, 
-                        size, System.Net.Sockets.SocketFlags.None);
+                    while (bytesRead < size)
+                    {
+                        bytesRead = stateSaver.sock.Receive(buffer, offset,
+                            size, System.Net.Sockets.SocketFlags.None);
+                    }
 
                     receivedMsg = new byte[bytesRead];
                     Array.Copy(buffer, offset, receivedMsg, 0, bytesRead);
