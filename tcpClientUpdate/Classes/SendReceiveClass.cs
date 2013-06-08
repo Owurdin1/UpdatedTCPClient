@@ -89,57 +89,60 @@ namespace tcpClientUpdate.Classes
             byte[] byteSize = new byte[LENGTH_BITS];
             int testsize = 0;
 
-            try
-            {
                 while (stateSaver.receivecounter < Convert.ToInt16(stateSaver.numMessages))
                 {
-                    int offset = 0;
-                    int size = 0;
-                    int bytesRead = 0;
-                    byte[] receivedMsg;
-
-                    while (bytesRead < 2)
+                    try
                     {
-                        bytesRead = stateSaver.sock.Receive(buffer, offset,
-                            LENGTH_BITS, System.Net.Sockets.SocketFlags.None);
-                    }
+                        int offset = 0;
+                        int size = 0;
+                        int bytesRead = 0;
+                        byte[] receivedMsg;
 
-                    Array.Copy(buffer, offset, byteSize, 0, LENGTH_BITS);
+                        while (bytesRead < 2)
+                        {
+                            bytesRead = stateSaver.sock.Receive(buffer, offset,
+                                LENGTH_BITS, System.Net.Sockets.SocketFlags.None);
+                        }
 
-                    if (BitConverter.IsLittleEndian)
-                    {
-                        Array.Reverse(byteSize);
-                    }
+                        Array.Copy(buffer, offset, byteSize, 0, LENGTH_BITS);
 
-                    size = BitConverter.ToInt16(byteSize, 0);
+                        if (BitConverter.IsLittleEndian)
+                        {
+                            Array.Reverse(byteSize);
+                        }
+
+                        size = BitConverter.ToInt16(byteSize, 0);
                     
                     
-                    testsize = size;
+                        testsize = size;
 
 
-                    offset += LENGTH_BITS;
+                        offset += LENGTH_BITS;
 
-                    while (bytesRead < size)
-                    {
-                        bytesRead = stateSaver.sock.Receive(buffer, offset,
-                            size, System.Net.Sockets.SocketFlags.None);
+                        while (bytesRead < size)
+                        {
+                            bytesRead = stateSaver.sock.Receive(buffer, offset,
+                                size, System.Net.Sockets.SocketFlags.None);
+                        }
+
+                        receivedMsg = new byte[bytesRead];
+                        Array.Copy(buffer, offset, receivedMsg, 0, bytesRead);
+
+                        stateSaver.lb.receivedMessages.Add(receivedMsg);
+                        //System.Windows.Forms.MessageBox.Show(stateSaver.receivecounter.ToString() + " recieved messages");
+                        stateSaver.receivecounter++;
                     }
-
-                    receivedMsg = new byte[bytesRead];
-                    Array.Copy(buffer, offset, receivedMsg, 0, bytesRead);
-
-                    stateSaver.lb.receivedMessages.Add(receivedMsg);
-                    stateSaver.receivecounter++;
+                    catch (Exception e)
+                    {
+                        stateSaver.receivecounter++;
+                        testsize.ToString();
+                        buffer.ToString();
+                        e.Message.ToString();
+                        //System.Windows.Forms.MessageBox.Show("SendReceiveClass.ReceivingHandler\r\n" + e.Message.ToString());
+                    }
                 }
 
                 //System.Windows.Forms.MessageBox.Show("Finished Receiving");
-            }
-            catch (Exception e)
-            {
-                testsize.ToString();
-                buffer.ToString();
-                e.Message.ToString();
-            }
         }
     }
 }
